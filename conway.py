@@ -26,8 +26,23 @@ def addGlider(i, j, grid):
 def update(frameNum, img, grid, N):
     # copy grid since we require 8 neighbors for calculation
     # and we go line by line 
-    newGrid = grid.copy()
+    newGrid = np.zeros(N*N).reshape(N, N)
     # TODO: Implement the rules of Conway's Game of Life
+    
+    for x in range(N):
+        for y in range(N):
+            neighbours = 0
+            for row in range(x-1, x+2):
+                if row >= 0 and row < N:
+                    for col in range(y-1, y+2):
+                        if col >= 0 and col < N:
+                            if not (x == row and y == col) and grid[row, col] == 255: neighbours += 1
+
+            if grid[x, y] == 255:
+                if neighbours == 3 or neighbours == 2: newGrid[x, y] = 255
+                else: newGrid[x, y] = 0
+            elif neighbours == 3: newGrid[x, y] = 255
+            
 
     # update data
     img.set_data(newGrid)
