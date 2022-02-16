@@ -12,9 +12,9 @@ ON = 255
 OFF = 0
 vals = [ON, OFF]
 
-def randomGrid(N):
+def randomGrid(width, height):
     """returns a grid of NxN random values"""
-    return np.random.choice(vals, N*N, p=[0.2, 0.8]).reshape(N, N)
+    return np.random.choice(vals, width*height, p=[0.2, 0.8]).reshape(width, height)
 
 def addGlider(i, j, grid):
     """adds a glider with top left cell at (i, j)"""
@@ -23,31 +23,43 @@ def addGlider(i, j, grid):
                        [0,  255, 255]])
     grid[i:i+3, j:j+3] = glider
 
-def update(frameNum, img, grid, N):
+def update(frameNum, img, grid, width, height):
     # copy grid since we require 8 neighbors for calculation
     # and we go line by line 
-    newGrid = np.zeros(N*N).reshape(N, N)
+    newGrid = np.zeros(width*height).reshape(width, height)
+
     # TODO: Implement the rules of Conway's Game of Life
-    
-    for x in range(N):
-        for y in range(N):
+    for x in range(width):
+        for y in range(height):
             neighbours = 0
             for row in range(x-1, x+2):
-                if row >= 0 and row < N:
+                if row >= 0 and row < width:
                     for col in range(y-1, y+2):
-                        if col >= 0 and col < N:
-                            if not (x == row and y == col) and grid[row, col] == 255: neighbours += 1
+                        if col >= 0 and col < height:
+                            if not (x == row and y == col) and grid[row, col] == ON: neighbours += 1
 
-            if grid[x, y] == 255:
-                if neighbours == 3 or neighbours == 2: newGrid[x, y] = 255
-                else: newGrid[x, y] = 0
-            elif neighbours == 3: newGrid[x, y] = 255
+            if grid[x, y] == ON:
+                if neighbours == 3 or neighbours == 2: newGrid[x, y] = ON
+                else: newGrid[x, y] = OFF
+            elif neighbours == 3: newGrid[x, y] = ON
             
 
     # update data
     img.set_data(newGrid)
     grid[:] = newGrid[:]
-    return img,
+    return img, 
+
+def input_file():
+    file = open("Input.txt", "r")
+    lines = file.read().split("\n")
+    width, height = int(lines[0].split(" ")[0]), int(lines[0].split(" ")[1])
+    generations = int(lines[1])
+    grid = np.zeros(width*height).reshape(width, height)
+    for line in lines[2:]:
+        x, y = int(line.split(" ")[0]), int(line.split(" ")[1])
+        grid[x, y] = ON
+    file.close()
+    return width, height, generations, grid
 
 # main() function
 def main():
@@ -56,17 +68,25 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Runs Conway's Game of Life system.py.")
     # TODO: add arguments
-    
-    # set grid size
-    N = 100
+    read_file = True
+    if read_file:
+        width, height, generations, grid = input_file()
+    else:
+        #declare size of universe
+        width = int(input("Width of universe (default 100): "))
+        height = int(input("Height of universe (default 100): "))
+
+        # declare number of generations
+        generations = int(input("Number of generations (default 200): "))
         
+        # declare grid
+        grid = np.array([])
+        # populate grid with random on/off - more off than on
+        grid = randomGrid(width, height)
+
     # set animation update interval
     updateInterval = 50
 
-    # declare grid
-    grid = np.array([])
-    # populate grid with random on/off - more off than on
-    grid = randomGrid(N)
     # Uncomment lines to see the "glider" demo
     #grid = np.zeros(N*N).reshape(N, N)
     #addGlider(1, 1, grid)
@@ -74,11 +94,11 @@ def main():
     # set up animation
     fig, ax = plt.subplots()
     img = ax.imshow(grid, interpolation='nearest')
-    ani = animation.FuncAnimation(fig, update, fargs=(img, grid, N, ),
-                                  frames = 10,
+    ani = animation.FuncAnimation(fig, update, fargs=(img, grid, width, height, ),
+                                  frames = generations,
                                   interval=updateInterval,
-                                  save_count=50)
-
+                                  save_count=100,
+                                  repeat=False)
     plt.show()
 
 # call main
