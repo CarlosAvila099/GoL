@@ -101,6 +101,7 @@ def report_lifes(width, height):
                                 headers="firstrow", tablefmt="psql") + "\n\n"
     output = open("Output.txt", "w")
     output.write(file_text[:-2])
+    output.close()
     print("Finished analyzing, please check output.txt.")
 
 # main() function
