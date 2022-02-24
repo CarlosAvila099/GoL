@@ -57,8 +57,8 @@ def update(frameNum, img, grid, width, height, generations):
         report_lifes(width, height)
     return img, 
 
-def input_file():
-    file = open("Input.txt", "r")
+def input_file(name):
+    file = open(f"{name}.txt", "r")
     lines = file.read().split("\n")
     width, height = int(lines[0].split(" ")[0]), int(lines[0].split(" ")[1])
     generations = int(lines[1])
@@ -111,17 +111,20 @@ def main():
     # parse arguments
     parser = argparse.ArgumentParser(description="Runs Conway's Game of Life system.py.")
     # TODO: add arguments
-    print("1.- Use configuration on file named Input.txt")
+    print("1.- Use configuration on file")
     print("2.- Enter values")
     out = False
     while not out:
         read_file = int(input("Enter your choice: "))
         if read_file == 1:
-            width, height, generations, grid = input_file()
+            print("\nThe txt file must be placed in the same folder as this python file.")
+            print("The file name must be written without file extension.")
+            name = input("Enter the name of the file: ")
+            width, height, generations, grid = input_file(name)
             out = True
         elif read_file == 2:
             #declare size of universe
-            width = int(input("Width of universe (default 100): ") or 100 ) 
+            width = int(input("\nWidth of universe (default 100): ") or 100 ) 
             height = int(input("Height of universe (default 100): ") or 100) 
 
             # declare number of generations
