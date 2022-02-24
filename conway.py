@@ -58,7 +58,7 @@ def update(frameNum, img, grid, width, height, generations):
     return img, 
 
 def input_file(name):
-    file = open(f"{name}.txt", "r")
+    file = open(f"Config/{name}.txt", "r")
     lines = file.read().split("\n")
     width, height = int(lines[0].split(" ")[0]), int(lines[0].split(" ")[1])
     generations = int(lines[1])
@@ -117,7 +117,7 @@ def main():
     while not out:
         read_file = int(input("Enter your choice: "))
         if read_file == 1:
-            print("\nThe txt file must be placed in the same folder as this python file.")
+            print("\nThe txt file must be placed in the Config folder.")
             print("The file name must be written without file extension.")
             name = input("Enter the name of the file: ")
             width, height, generations, grid = input_file(name)
